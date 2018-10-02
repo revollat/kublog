@@ -1,0 +1,6 @@
+apiVersion: "revollat.net/v1"
+kind: Kublog
+metadata:
+  name: monblog
+spec:
+  content: "OK ///..."

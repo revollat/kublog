@@ -1,0 +1,6 @@
+apiVersion: "revollat.net/v1"
+kind: Kublog
+metadata:
+  name: theblog
+spec:
+  content: "Un super blog de la mort qui tue !! oooottto"
