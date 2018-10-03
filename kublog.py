@@ -2,6 +2,9 @@ from kubernetes import client, config, watch
 import os
 import hashlib
 
+from kubernetes.client.rest import ApiException
+from pprint import pprint
+
 DOMAIN = "revollat.net"
 DEPLOYMENT_NAME = "nginx-deployment"
 
@@ -47,6 +50,8 @@ def process(crds, obj, operation):
             obj["spec"]["contenthash"] = hex_dig
             crds.replace_namespaced_custom_object(DOMAIN, "v1", namespace, "kublogs", name, obj)
 
+            ret = api_instance.list_namespaced_pod(namespace="default", label_selector="app=nginx"+name)
+            print(ret.items[0].metadata.name)
 
     elif operation == "DELETED":
         delete_deployment(extensions_v1beta1, name)
@@ -104,11 +109,19 @@ if __name__ == "__main__":
         config.load_incluster_config()
     else:
         config.load_kube_config()
+		
     configuration = client.Configuration()
     configuration.assert_hostname = False
     api_client = client.api_client.ApiClient(configuration=configuration)
     crds = client.CustomObjectsApi(api_client)
 
+    #try: 
+        #api_instance = client.CoreV1Api()
+        #api_response = api_instance.list_namespaced_pod(namespace="default", watch=False)
+        #pprint(api_response)	
+    #except ApiException as e:
+    #   print("Exception when calling CoreV1Api->list_namespaced_pod: %s\n" % e)
+	
     print("Watch for kublogs ...")
     resource_version = ''
     while True:
