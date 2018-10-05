@@ -55,11 +55,13 @@ def process(crds, obj, operation, metadata, name):
 
             print("DEBUG : podname = " + podname)
 
+            # Transfert de fichiers
+            # =========================================================================
             exec_command = ['sh']
 
-            api = core_v1_api.CoreV1Api()
+            #apidl = core_v1_api.CoreV1Api()
 
-            resp = stream(api.connect_get_namespaced_pod_exec, podname, 'default', command=exec_command,
+            resp = stream(api_instance.connect_get_namespaced_pod_exec, podname, 'default', command=exec_command,
                           stderr=True, stdin=True, stdout=True, tty=False, _preload_content=False)
 
             source_file = '/tmp/thetest'
@@ -83,6 +85,8 @@ def process(crds, obj, operation, metadata, name):
                     break
 
             resp.close()
+            # =========================================================================
+            # FIN Transfert de fichiers
 
     elif operation == "DELETED":
 
@@ -142,6 +146,9 @@ if __name__ == "__main__":
     configuration = client.Configuration()
     configuration.assert_hostname = False
     api_client = client.api_client.ApiClient(configuration=configuration)
+
+    client.Configuration.set_default(configuration)
+
     crds = client.CustomObjectsApi(api_client)
 
     # try:
@@ -155,7 +162,7 @@ if __name__ == "__main__":
     # exec_command = ['sh']
     # api = core_v1_api.CoreV1Api()
     #
-    # resp = stream(api.connect_get_namespaced_pod_exec, "nginx-deploymentmonblog-6cc4595cb7-kdhvk",
+    # resp = stream(api.connect_get_namespaced_pod_exec, "nginx-deploymentmonblog-6cc4595cb7-vzqlm",
     #               'default', command=exec_command, stderr=True, stdin=True, stdout=True, tty=False, _preload_content=False)
     #
     # source_file = '/tmp/thetest'
@@ -186,9 +193,9 @@ if __name__ == "__main__":
     print("Watch for kublogs ...")
     resource_version = ''
     while True:
-        stream = watch.Watch().stream(crds.list_cluster_custom_object, DOMAIN, "v1", "kublogs",
+        crd_stream = watch.Watch().stream(crds.list_cluster_custom_object, DOMAIN, "v1", "kublogs",
                                       resource_version=resource_version)
-        for event in stream:
+        for event in crd_stream:
             obj = event["object"]
             operation = event['type']
             spec = obj.get("spec")
