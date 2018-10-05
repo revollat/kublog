@@ -20,7 +20,7 @@ if __name__ == "__main__":
     c.assert_hostname = False
     Configuration.set_default(c)
     api = core_v1_api.CoreV1Api()
-    name = 'nginx-deploymentmonblog-6cc4595cb7-t62kn'
+    name = 'nginx-deploymentmonblog-6cc4595cb7-k2m7t'
 
     onlyfiles = [f for f in listdir("/tmp/monblog/") if isfile(join("/tmp/monblog/", f))]
 
@@ -31,18 +31,21 @@ if __name__ == "__main__":
 
     with open("/tmp/monblog.tgz", "rb") as image_file:
         encoded_string = base64.b64encode(image_file.read())
-        print(encoded_string)
+        #print(encoded_string)
+
+    b64str = encoded_string.decode()
 
     exec_command = [
         '/bin/sh',
         '-c',
-        'echo '+encoded_string,
+        'echo '+b64str,
         ' | base64 --decode > /tmp/test.tgz'
     ]
+    #exec_command = ['ls']
     resp = stream(api.connect_get_namespaced_pod_exec, name, 'default',
                   command=exec_command,
-                  stderr=True, stdin=False,
-                  stdout=True, tty=False)
+                  stderr=True, stdin=True,
+                  stdout=True, tty=False, _preload_content=False)
     print("Response: " + resp)
 
 def cpfile():

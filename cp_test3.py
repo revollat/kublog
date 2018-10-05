@@ -19,7 +19,7 @@ c = Configuration()
 c.assert_hostname = False
 Configuration.set_default(c)
 api = core_v1_api.CoreV1Api()
-name = 'nginx-deploymentmonblog-6cc4595cb7-8kvbq'
+name = 'nginx-deploymentmonblog-6cc4595cb7-k2m7t'
 
 resp = None
 try:
@@ -51,14 +51,14 @@ commands.append(buffer)
 
 while resp.is_open():
     resp.update(timeout=1)
-    if resp.peek_stdout():
-        print("STDOUT: %s" % resp.read_stdout())
-    if resp.peek_stderr():
-        print("STDERR: %s" % resp.read_stderr())
+    #if resp.peek_stdout():
+        #print("STDOUT: %s" % resp.read_stdout())
+    #if resp.peek_stderr():
+        #print("STDERR: %s" % resp.read_stderr())
     if commands:
         c = commands.pop(0)
         #print("Running command... %s\n" % c)
-        resp.write_stdin(c)
+        resp.write_stdin(c.decode())
     else:
         break
 resp.close()
